@@ -1,17 +1,14 @@
 package main
 
 import (
-	"log"
-	"net/http"
+	"fmt"
+	"split-bill-backend/internal/config"
 )
 
-func SetupRoutes() {
-
-}
-
 func main() {
+	cfg := config.MustLoad()
 
-	if err := http.ListenAndServe(":8080", nil); err != nil {
-		log.Fatal(err)
-	}
+	// TODO DELETE THIS!!!
+	fmt.Println(cfg)
+
 }

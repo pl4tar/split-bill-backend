@@ -2,6 +2,7 @@ package config
 
 import (
 	"log"
+	"log/slog"
 	"os"
 
 	"github.com/ilyakaznacheev/cleanenv"
@@ -25,14 +26,17 @@ type DatabaseConfig struct {
 }
 
 type Config struct {
-	Env        string           `yaml:"env" env-default:"local"`
-	HTTPServer HTTPServerConfig `yaml:"http_server"`
-	Database   DatabaseConfig   `yaml:"database"`
-	Client     *pgxpool.Pool
+	Env              string `yaml:"env" env-default:"local"`
+	HTTPServerConfig `yaml:"http_server"`
+	DatabaseConfig   `yaml:"database"`
+	Client           *pgxpool.Pool
 }
 
 func MustLoad() *Config {
-	_ = godotenv.Load()
+	err := godotenv.Load()
+	if err != nil {
+		slog.Warn("no env")
+	}
 
 	configPath := os.Getenv("CONFIG_PATH")
 	if configPath == "" {
@@ -48,6 +52,13 @@ func MustLoad() *Config {
 	if err := cleanenv.ReadConfig(configPath, &cfg); err != nil {
 		log.Fatalf("cannot read config: %s", err)
 	}
+
+	// Подставляем переменные окружения вручную
+	cfg.DatabaseConfig.DB_HOST = os.Getenv("DB_HOST")
+	cfg.DatabaseConfig.DB_PORT = os.Getenv("DB_PORT")
+	cfg.DatabaseConfig.DB_USERNAME = os.Getenv("DB_USERNAME")
+	cfg.DatabaseConfig.DB_PASSWORD = os.Getenv("DB_PASSWORD")
+	cfg.DatabaseConfig.DB_NAME = os.Getenv("DB_NAME")
 
 	return &cfg
 }

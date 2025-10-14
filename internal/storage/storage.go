@@ -11,12 +11,8 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-// type Storage struct {
-// 	db *sql.DB
-// }
-
 func NewConnection(ctx context.Context, cfg *config.Config) *pgxpool.Pool {
-	env := cfg.Database
+	env := cfg.DatabaseConfig
 
 	dsn := fmt.Sprintf("postgresql://%s:%s@%s:%s/%s",
 		env.DB_USERNAME,
@@ -28,7 +24,7 @@ func NewConnection(ctx context.Context, cfg *config.Config) *pgxpool.Pool {
 
 	config, err := pgxpool.ParseConfig(dsn)
 	if err != nil {
-		log.Fatal("Unable to parse config")
+		log.Fatal("Unable to parse config", err)
 	}
 
 	// Настройки пула
@@ -44,9 +40,9 @@ func NewConnection(ctx context.Context, cfg *config.Config) *pgxpool.Pool {
 	}
 
 	// if err = CheckAndMigrate(conn); err != nil {
-	// 	slog.Error("%v", err)
+	// 	slog.Error("ошибка при миграции базы данных", slog.Any("error", err))
 	// 	panic(err)
 	// }
-
+	slog.Info("DB connected")
 	return conn
 }

@@ -1,12 +1,9 @@
 package models
 
-import "time"
-
 type Users struct {
-	ID      uint
-	Name    string
-	Email   string
-	Created time.Time
+	ID    uint
+	Name  string
+	Email string
 }
 
 type UserRegister struct {

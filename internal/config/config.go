@@ -5,6 +5,8 @@ import (
 	"os"
 
 	"github.com/ilyakaznacheev/cleanenv"
+	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/joho/godotenv"
 )
 
 type HTTPServerConfig struct {
@@ -14,24 +16,27 @@ type HTTPServerConfig struct {
 }
 
 type DatabaseConfig struct {
-	Host     string `yaml:"host"`
-	Port     int    `yaml:"port"`
-	User     string `yaml:"user"`
-	Password string `yaml:"password"`
-	DBName   string `yaml:"dbname"`
-	SSLMode  string `yaml:"sslmode"`
+	DB_HOST     string `yaml:"host"`
+	DB_PORT     string `yaml:"port"`
+	DB_USERNAME string `yaml:"username"`
+	DB_PASSWORD string `yaml:"password"`
+	DB_NAME     string `yaml:"database"`
+	SSLMode     string `yaml:"sslmode"`
 }
 
 type Config struct {
 	Env        string           `yaml:"env" env-default:"local"`
 	HTTPServer HTTPServerConfig `yaml:"http_server"`
 	Database   DatabaseConfig   `yaml:"database"`
+	Client     *pgxpool.Pool
 }
 
 func MustLoad() *Config {
+	_ = godotenv.Load()
+
 	configPath := os.Getenv("CONFIG_PATH")
 	if configPath == "" {
-		configPath = "./config/local.yaml"
+		log.Fatal("Fail load cfg")
 	}
 
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {

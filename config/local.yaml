@@ -6,9 +6,9 @@ http_server:
   idle_timeout: 60s
 
 database:
-  host: "172.17.0.2"
-  port: 5432
-  user: "postgres"
-  password: "8967451230"
-  dbname: "split_bill_db"
+  host: ${DB_HOST}
+  port: ${DB_PORT}
+  username: ${DB_USERNAME} 
+  password: ${DB_PASSWORD}
+  database: ${DB_NAME}
   sslmode: "disable"

@@ -48,3 +48,12 @@ func QueryGetBillsByUserID(ctx context.Context, db *pgxpool.Pool, user *entity.U
 
     return bills, nil
 }
+
+func QueryDeleteBillByID(ctx context.Context, db *pgxpool.Pool, bill_id uint) error{
+    _, err := db.Exec(ctx,
+         `DELETE FROM bills WHERE id = $1`,
+         bill_id,
+        )
+        
+    return err
+}

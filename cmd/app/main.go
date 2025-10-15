@@ -55,5 +55,6 @@ func main() {
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer stop()
 	cfg.Client = storage.NewConnection(ctx, cfg)
+
 	<-ctx.Done()
 }

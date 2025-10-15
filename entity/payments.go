@@ -1,4 +1,4 @@
-package models
+package entity
 
 type Payments struct {
 	ID         uint

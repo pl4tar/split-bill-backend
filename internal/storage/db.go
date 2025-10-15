@@ -20,12 +20,12 @@ func CheckAndMigrate(db *pgxpool.Pool) error {
 	var count int
 	err = db.QueryRow(context.Background(), "select count(*) from users").Scan(&count)
 	if err != nil {
-		return fmt.Errorf("Ошибка проверки количесва пользователей в бд: %v", err)
+		return fmt.Errorf("ошибка проверки количества пользователей в бд: %v", err)
 	}
 
 	if count == 0 {
 		if err = InsertAdminUser(context.Background(), db); err != nil {
-			return fmt.Errorf("Ошибка добавления пользователя: %w", err)
+			return fmt.Errorf("ошибка добавления пользователя: %v", err)
 		}
 	}
 

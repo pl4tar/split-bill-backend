@@ -39,10 +39,12 @@ func NewConnection(ctx context.Context, cfg *config.Config) *pgxpool.Pool {
 		panic(err)
 	}
 
-	// if err = CheckAndMigrate(conn); err != nil {
-	// 	slog.Error("ошибка при миграции базы данных", slog.Any("error", err))
-	// 	panic(err)
-	// }
+	if err = CheckAndMigrate(conn); err != nil {
+		slog.Error("ошибка при миграции базы данных", slog.Any("error", err))
+		panic(err)
+	}
+
 	slog.Info("DB connected")
+
 	return conn
 }

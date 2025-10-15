@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/jackc/pgx/v5/pgxpool"
+	"split-bill-backend/entity"
 )
 
 func QueryCreateNewBill(ctx context.Context, db *pgxpool.Pool, user *entity.Users, billName string) error {
@@ -15,23 +16,35 @@ func QueryCreateNewBill(ctx context.Context, db *pgxpool.Pool, user *entity.User
 	return err
 }
 
-func QueryGetBillsByUserID(ctx context.Context, db *pgxpool.Pool, user *entity.Users) (*entity.Bills, error) {
-	var bill []Bills
-	
-	err := db.QueryRow(
-		ctx,
-		`SELECT id, title 
-		FROM bills
-		WHERE created_by = $1`,
-		user.ID,
-	).Scan(
-		&bill.ID,
-		&bill.title
-	)
+func QueryGetBillsByUserID(ctx context.Context, db *pgxpool.Pool, user *entity.Users) ([]entity.Bills, error) {
+    rows, err := db.Query(
+        ctx,
+        `SELECT id, title, created_by
+        FROM bills
+        WHERE created_by = $1`,
+        user.ID,
+    )
+    if err != nil {
+        return nil, err
+    }
+    defer rows.Close()
 
-	if err != nil{
-		return nil, err
-	}
+    var bills []entity.Bills
+    for rows.Next() {
+        var bill entity.Bills
+        if err := rows.Scan(
+			&bill.ID, 
+			&bill.Title, 
+			&bill.CreatedUserID,
+			); err != nil {
+            return nil, err
+        }
+        bills = append(bills, bill)
+    }
 
-	return &bill, err
+    if rows.Err() != nil {
+        return nil, rows.Err()
+    }
+
+    return bills, nil
 }

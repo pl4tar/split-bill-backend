@@ -5,3 +5,8 @@ type Bills struct {
 	Title         string `json:"bill_title" example:"Weekend with friends"`
 	CreatedUserID uint   `json:"user_id" example:"1"`
 }
+
+type BillsInput struct {
+	Title         string `json:"bill_title" example:"dfsfsd"`
+	CreatedUserID string `json:"user_id" example:"1"`
+}

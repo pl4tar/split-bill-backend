@@ -5,16 +5,16 @@ import (
 	"fmt"
 	"log"
 	"log/slog"
-	"split-bill-backend/internal/config"
+	"split-bill-backend/config"
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 func NewConnection(ctx context.Context, cfg *config.Config) *pgxpool.Pool {
-	env := cfg.DatabaseConfig
+	env := cfg.Env
 
-	dsn := fmt.Sprintf("postgresql://%s:%s@%s:%s/%s",
+	dsn := fmt.Sprintf("postgresql://%s:%s@%s:%d/%s",
 		env.DB_USERNAME,
 		env.DB_PASSWORD,
 		env.DB_HOST,

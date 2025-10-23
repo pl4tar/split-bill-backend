@@ -10,3 +10,7 @@ type BillsInput struct {
 	Title         string `json:"bill_title" example:"dfsfsd"`
 	CreatedUserID string `json:"user_id" example:"1"`
 }
+
+// func New(title string, creatorID uint) *bills {
+// 	return &bills{Title: title, CreatedUserID: creatorID}
+// }

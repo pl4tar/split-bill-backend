@@ -2,59 +2,54 @@ package main
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"log/slog"
-	"os"
+	"net/http"
 	"os/signal"
-	"split-bill-backend/internal/config"
+	"split-bill-backend/config"
+	"split-bill-backend/internal/handler"
 	"split-bill-backend/internal/storage"
 	"syscall"
+	"time"
 )
-
-const (
-	envLocal = "local"
-	envDev   = "dev"
-)
-
-func setupLogger(env string) *slog.Logger {
-	var log *slog.Logger
-	switch env {
-	case envLocal:
-		log = slog.New(
-			slog.NewTextHandler(
-				os.Stdout,
-				&slog.HandlerOptions{Level: slog.LevelDebug},
-			),
-		)
-	case envDev:
-		log = slog.New(
-			slog.NewJSONHandler(
-				os.Stdout,
-				&slog.HandlerOptions{Level: slog.LevelInfo},
-			),
-		)
-	default:
-		// По умолчанию используем текстовый логгер
-		log = slog.New(
-			slog.NewTextHandler(
-				os.Stdout,
-				&slog.HandlerOptions{Level: slog.LevelInfo},
-			),
-		)
-	}
-
-	return log
-}
 
 func main() {
-	cfg := config.MustLoad()
-	log := setupLogger(cfg.Env)
+	cfg := config.GetConfig()
 
-	log.Info("Starting app", slog.String("env", cfg.Env))
-	log.Debug("Debud messages are enabled")
+	slog.Info("Starting app")
+	slog.Debug("Debud messages are enabled")
+
+	// router := chi.NewRouter()
+
+	// router.Use(middleware.RequestID)
+	// router.Use(middleware.Logger)
+	// router.Use(mwLog.New(log))
+	// router.Use(middleware.Recoverer)
+	// router.Use(middleware.URLFormat)
 
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer stop()
 	cfg.Client = storage.NewConnection(ctx, cfg)
+	server := &http.Server{
+		Addr:         fmt.Sprintf(":%d", cfg.Env.API_PORT),
+		Handler:      handler.Setup(cfg, ctx),
+		WriteTimeout: time.Second * 15,
+		ReadTimeout:  time.Second * 15,
+		IdleTimeout:  time.Second * 60,
+	}
 
+	go func() {
+		slog.Info("Server run")
+		if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+			slog.Error("⚫️ Server %v", slog.String("error", err.Error()))
+			panic(err)
+		}
+	}()
 	<-ctx.Done()
+	slog.Info("⚫️ Graceful shutdown initiated...")
+	if err := server.Shutdown(ctx); err != nil {
+		slog.Error("⚫️ Server forced to shutdown", slog.String("error", err.Error()))
+		panic(err)
+	}
 }

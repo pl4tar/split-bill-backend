@@ -12,7 +12,7 @@ func QueryCreateNewBill(ctx context.Context, db *pgxpool.Pool, bill *entity.Bill
 	_, err := db.Exec(ctx,
 		`INSERT INTO bills (title, created_by)
 		VALUES($1, $2)
-	`, bill.Title, bill.ID)
+	`, bill.Title, bill.CreatedUserID)
 
 	return err
 }
@@ -63,6 +63,18 @@ func QueryDeleteBillByUserID(ctx context.Context, db *pgxpool.Pool, bill_id uint
 	_, err := db.Exec(ctx,
 		`DELETE FROM bills WHERE created_by = $1`,
 		bill_id,
+	)
+
+	return err
+}
+
+func QueryEditTitle(ctx context.Context, db *pgxpool.Pool, bill *entity.Bills) error {
+	_, err := db.Exec(ctx,
+		`UPDATE bills
+		SET title = $1
+		WHERE id = $2`,
+		bill.Title,
+		bill.ID,
 	)
 
 	return err

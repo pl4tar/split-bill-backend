@@ -11,6 +11,9 @@ var (
 )
 
 var (
-	GetAllBill  = fmt.Sprintf("GET %s/bills", apiV1)
-	GetBillById = fmt.Sprintf("GET %s/bills/{id}", apiV1)
+	GetAllBill      = fmt.Sprintf("GET %s/bills", apiV1)
+	GetBillById     = fmt.Sprintf("GET %s/bills/{id}", apiV1)
+	PostNewBill     = fmt.Sprintf("POST %s/bills", apiV1)
+	DeleteBillByID  = fmt.Sprintf("DELETE %s/bills", apiV1)
+	UpdateBillTitle = fmt.Sprintf("PATCH %s/bills", apiV1)
 )

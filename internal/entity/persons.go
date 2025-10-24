@@ -1,10 +1,11 @@
 package entity
 
 type Persons struct {
-	ID   uint   `json:"id" example:"1"`
-	Name string `json:"name" example:"Danil"`
+	ID      uint   `json:"id,string" example:"1"`
+	Name    string `json:"name" example:"Danil"`
+	OwnerID uint   `json:"owner_id,string" example:"1"`
 }
-
-type PersonInput struct {
+type PersonsOutput struct {
+	ID   uint   `json:"id,string" example:"1"`
 	Name string `json:"name" example:"Danil"`
 }

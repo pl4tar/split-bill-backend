@@ -7,7 +7,8 @@ CREATE TABLE if not exists users (
 
 CREATE TABLE if not exists peoples (
   id SERIAL PRIMARY KEY,
-  name VARCHAR(255) NOT NULL
+  name VARCHAR(255) NOT NULL,
+  owner_id SERIAL REFERENCES users(id)
 );
 
 CREATE TABLE if not exists products (

@@ -8,22 +8,22 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-func QueryCreateNewBill(ctx context.Context, db *pgxpool.Pool, user *entity.Users, billName string) error {
+func QueryCreateNewBill(ctx context.Context, db *pgxpool.Pool, bill *entity.Bills) error {
 	_, err := db.Exec(ctx,
 		`INSERT INTO bills (title, created_by)
 		VALUES($1, $2)
-	`, billName, user.ID)
+	`, bill.Title, bill.ID)
 
 	return err
 }
 
-func QueryGetBillsByUserID(ctx context.Context, db *pgxpool.Pool, user *entity.Users) ([]entity.Bills, error) {
+func QueryGetBillsByUserID(ctx context.Context, db *pgxpool.Pool, id *string) ([]entity.Bills, error) {
 	rows, err := db.Query(
 		ctx,
 		`SELECT id, title, created_by
         FROM bills
         WHERE created_by = $1`,
-		user.ID,
+		id,
 	)
 	if err != nil {
 		return nil, err
@@ -53,6 +53,15 @@ func QueryGetBillsByUserID(ctx context.Context, db *pgxpool.Pool, user *entity.U
 func QueryDeleteBillByID(ctx context.Context, db *pgxpool.Pool, bill_id uint) error {
 	_, err := db.Exec(ctx,
 		`DELETE FROM bills WHERE id = $1`,
+		bill_id,
+	)
+
+	return err
+}
+
+func QueryDeleteBillByUserID(ctx context.Context, db *pgxpool.Pool, bill_id uint) error {
+	_, err := db.Exec(ctx,
+		`DELETE FROM bills WHERE created_by = $1`,
 		bill_id,
 	)
 

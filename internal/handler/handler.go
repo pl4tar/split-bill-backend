@@ -13,5 +13,7 @@ func Setup(cfg *config.Config, ctx context.Context) http.Handler {
 	mux.HandleFunc(GetUserByEmail, controllers.GetUserByEmail(ctx, cfg.Client))
 	mux.HandleFunc(PostNewUser, controllers.AddNewUser(ctx, cfg))
 	mux.HandleFunc(DeleteUserByEmail, controllers.DeleteUserEmail(ctx, cfg.Client))
+
+	mux.HandleFunc(GetAllBill, controllers.GetAllBillsHandler(ctx, cfg.Client))
 	return mux
 }

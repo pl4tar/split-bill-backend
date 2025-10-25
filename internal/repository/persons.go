@@ -7,25 +7,48 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-func QueryCreateNewPerson(ctx context.Context, db *pgxpool.Pool, Person *entity.Persons) error {
-	_, err := db.Exec(ctx,
-		`INSERT INTO peoples (name, owner_id)
-		VALUES($1, $2)
-	`,
-		Person.Name,
-		Person.OwnerID,
+func QueryCreateNewPerson(ctx context.Context, db *pgxpool.Pool, person *entity.Persons) error {
+	tx, err := db.Begin(ctx)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback(ctx)
+
+	var personID uint
+	err = tx.QueryRow(ctx,
+		`INSERT INTO peoples (name)
+		VALUES($1)
+		RETURNING id`,
+		person.Name,
+	).Scan(&personID)
+
+	if err != nil {
+		return err
+	}
+
+	_, err = tx.Exec(ctx,
+		`INSERT INTO bill_people (bill_id, person_id)
+		VALUES($1, $2)`,
+		person.BillID,
+		personID,
 	)
 
-	return err
+	if err != nil {
+		return err
+	}
+
+	return tx.Commit(ctx)
 }
 
-func QueryGetPersonsByUserID(ctx context.Context, db *pgxpool.Pool, id *string) ([]entity.PersonsOutput, error) {
+func QueryGetPersonsByBillID(ctx context.Context, db *pgxpool.Pool, billID *string) ([]entity.PersonsOutput, error) {
 	rows, err := db.Query(
 		ctx,
-		`SELECT id, name
-        FROM peoples
-        WHERE owner_id = $1`,
-		id,
+		`SELECT p.id, p.name
+		FROM peoples p
+		INNER JOIN bill_people bp ON p.id = bp.person_id
+		WHERE bp.bill_id = $1
+		ORDER BY p.id`,
+		billID,
 	)
 	if err != nil {
 		return nil, err
@@ -51,22 +74,83 @@ func QueryGetPersonsByUserID(ctx context.Context, db *pgxpool.Pool, id *string) 
 	return persons, nil
 }
 
-func QueryDeletePersonByID(ctx context.Context, db *pgxpool.Pool, person_id uint) error {
-	_, err := db.Exec(ctx,
-		`DELETE FROM peoples WHERE id = $1`,
-		person_id,
-	)
+func QueryDeletePersonByID(ctx context.Context, db *pgxpool.Pool, personID *uint) error {
+	tx, err := db.Begin(ctx)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback(ctx)
 
-	return err
+	_, err = tx.Exec(ctx,
+		`DELETE FROM bill_people WHERE person_id = $1`,
+		personID,
+	)
+	if err != nil {
+		return err
+	}
+
+	_, err = tx.Exec(ctx,
+		`DELETE FROM product_assignments WHERE person_id = $1`,
+		personID,
+	)
+	if err != nil {
+		return err
+	}
+	//TODO сделать при реализации debts
+	// _, err = tx.Exec(ctx,
+	// 	`DELETE FROM debts WHERE from_person_id = $1 OR to_person_id = $1`,
+	// 	personID,
+	// )
+	// if err != nil {
+	// 	return err
+	// }
+
+	_, err = tx.Exec(ctx,
+		`DELETE FROM peoples WHERE id = $1`,
+		personID,
+	)
+	if err != nil {
+		return err
+	}
+
+	return tx.Commit(ctx)
 }
 
-func QueryDeletepersonByUserID(ctx context.Context, db *pgxpool.Pool, person_id uint) error {
-	_, err := db.Exec(ctx,
-		`DELETE FROM peoples WHERE created_by = $1`,
-		person_id,
-	)
+func QueryDeleteAllPersonsByBillID(ctx context.Context, db *pgxpool.Pool, billID uint) error {
+	tx, err := db.Begin(ctx)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback(ctx)
 
-	return err
+	_, err = tx.Exec(ctx,
+		`DELETE FROM product_assignments 
+		WHERE person_id IN (SELECT person_id FROM bill_people WHERE bill_id = $1)`,
+		billID,
+	)
+	if err != nil {
+		return err
+	}
+
+	_, err = tx.Exec(ctx,
+		`DELETE FROM debts 
+		WHERE from_person_id IN (SELECT person_id FROM bill_people WHERE bill_id = $1)
+		OR to_person_id IN (SELECT person_id FROM bill_people WHERE bill_id = $1)`,
+		billID,
+	)
+	if err != nil {
+		return err
+	}
+
+	_, err = tx.Exec(ctx,
+		`DELETE FROM bill_people WHERE bill_id = $1`,
+		billID,
+	)
+	if err != nil {
+		return err
+	}
+
+	return tx.Commit(ctx)
 }
 
 func QueryEditName(ctx context.Context, db *pgxpool.Pool, person *entity.Persons) error {

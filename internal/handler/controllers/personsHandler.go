@@ -21,7 +21,7 @@ func GetAllPersonsHandler(ctx context.Context, db *pgxpool.Pool) http.HandlerFun
 			return
 		}
 
-		persons, err := repository.QueryGetPersonsByUserID(r.Context(), db, &id)
+		persons, err := repository.QueryGetPersonsByBillID(r.Context(), db, &id)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			w.Write([]byte(err.Error()))
@@ -58,14 +58,14 @@ func AddNewPersonHandler(ctx context.Context, cfg *config.Config) http.HandlerFu
 			return
 		}
 		defer r.Body.Close()
-		if person.Name == "" || person.OwnerID == 0 {
+		if person.Name == "" || person.BillID == 0 {
 			w.WriteHeader(http.StatusBadRequest)
 			w.Write([]byte("Name or owner id is required"))
 
 			return
 		}
 
-		_, err := repository.QueryGetUserByID(r.Context(), cfg.Client, &person.OwnerID)
+		_, err := repository.QueryGetBillByID(r.Context(), cfg.Client, &person.BillID)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			w.Write([]byte("unknown user"))
@@ -112,7 +112,7 @@ func DeletePersonByID(ctx context.Context, db *pgxpool.Pool) http.HandlerFunc {
 			return
 		}
 
-		err := repository.QueryDeletePersonByID(r.Context(), db, request.Person_id)
+		err := repository.QueryDeletePersonByID(r.Context(), db, &request.Person_id)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			w.Write([]byte(err.Error()))
@@ -154,13 +154,13 @@ func EditPersonHandler(ctx context.Context, db *pgxpool.Pool) http.HandlerFunc {
 			return
 		}
 
-		if person.OwnerID == 0 {
+		if person.BillID == 0 {
 			w.WriteHeader(http.StatusBadRequest)
 			w.Write([]byte("Person owner id is required"))
 			return
 		}
 
-		_, userExist := repository.QueryGetUserByID(r.Context(), db, &person.OwnerID)
+		_, userExist := repository.QueryGetUserByID(r.Context(), db, &person.BillID)
 		if userExist != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			w.Write([]byte("unknown user"))

@@ -59,13 +59,20 @@ func QueryDeleteBillByID(ctx context.Context, db *pgxpool.Pool, bill_id uint) er
 	return err
 }
 
-func QueryDeleteBillByUserID(ctx context.Context, db *pgxpool.Pool, bill_id uint) error {
-	_, err := db.Exec(ctx,
-		`DELETE FROM bills WHERE created_by = $1`,
+func QueryGetBillByID(ctx context.Context, db *pgxpool.Pool, bill_id *uint) (*entity.Bills, error) {
+	var bill entity.Bills
+
+	err := db.QueryRow(ctx,
+		`SELECT title, created_by 
+		FROM bills 
+		WHERE id = $1`,
 		bill_id,
+	).Scan(
+		&bill.Title,
+		&bill.CreatedUserID,
 	)
 
-	return err
+	return &bill, err
 }
 
 func QueryEditTitle(ctx context.Context, db *pgxpool.Pool, bill *entity.Bills) error {

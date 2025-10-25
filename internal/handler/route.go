@@ -27,3 +27,10 @@ var (
 	DeletePerson     = fmt.Sprintf("DELETE %s/persons", apiV1)
 	UpdatePersonName = fmt.Sprintf("PATCH %s/persons", apiV1)
 )
+
+// Products
+var (
+	GetAllProducts = fmt.Sprintf("GET %s/products", apiV1)
+	PostNewProduct = fmt.Sprintf("POST %s/products", apiV1)
+	DeleteProduct  = fmt.Sprintf("DELETE %s/products", apiV1)
+)

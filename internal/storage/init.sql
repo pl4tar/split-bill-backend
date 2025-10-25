@@ -14,7 +14,8 @@ CREATE TABLE if not exists products (
   id SERIAL PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
   price NUMERIC(10,2) NOT NULL,
-  count INT NOT NULL
+  count INT NOT NULL,
+  payer_id INT NOT NULL REFERENCES peoples(id) 
 );
 
 CREATE TABLE if not exists bills (

@@ -36,8 +36,10 @@ func GetAllPersonsHandler(ctx context.Context, db *pgxpool.Pool) http.HandlerFun
 
 			return
 		}
-		w.Write(body)
+
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(http.StatusOK)
+		w.Write(body)
 	}
 }
 

@@ -37,8 +37,10 @@ func GetUserByEmail(ctx context.Context, db *pgxpool.Pool) http.HandlerFunc {
 
 			return
 		}
-		w.Write(body)
+
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(http.StatusOK)
+		w.Write(body)
 	}
 }
 

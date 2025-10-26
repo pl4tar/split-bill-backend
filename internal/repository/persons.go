@@ -40,7 +40,7 @@ func QueryCreateNewPerson(ctx context.Context, db *pgxpool.Pool, person *entity.
 	return tx.Commit(ctx)
 }
 
-func QueryGetPersonsByBillID(ctx context.Context, db *pgxpool.Pool, billID *string) ([]entity.PersonsOutput, error) {
+func QueryGetPersonsByBillID(ctx context.Context, db *pgxpool.Pool, billID string) ([]entity.PersonsOutput, error) {
 	rows, err := db.Query(
 		ctx,
 		`SELECT p.id, p.name
@@ -69,6 +69,39 @@ func QueryGetPersonsByBillID(ctx context.Context, db *pgxpool.Pool, billID *stri
 
 	if rows.Err() != nil {
 		return nil, rows.Err()
+	}
+
+	return persons, nil
+}
+
+func QueryGetPersonsForProduct(ctx context.Context, db *pgxpool.Pool, productID uint) ([]entity.Persons, error) {
+	rows, err := db.Query(ctx,
+		`SELECT p.id, p.name
+        FROM peoples p
+        INNER JOIN product_assignments pa ON p.id = pa.person_id
+        WHERE pa.product_id = $1
+        ORDER BY p.id`,
+		productID,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var persons []entity.Persons
+	for rows.Next() {
+		var person entity.Persons
+		if err := rows.Scan(
+			&person.ID,
+			&person.Name,
+		); err != nil {
+			return nil, err
+		}
+		persons = append(persons, person)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
 	}
 
 	return persons, nil

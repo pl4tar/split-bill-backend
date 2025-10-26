@@ -21,7 +21,7 @@ func GetAllPersonsHandler(ctx context.Context, db *pgxpool.Pool) http.HandlerFun
 			return
 		}
 
-		persons, err := repository.QueryGetPersonsByBillID(r.Context(), db, &id)
+		persons, err := repository.QueryGetPersonsByBillID(r.Context(), db, id)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			w.Write([]byte(err.Error()))

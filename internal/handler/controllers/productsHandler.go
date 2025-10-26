@@ -20,7 +20,7 @@ func GetAllProductsHandler(ctx context.Context, db *pgxpool.Pool) http.HandlerFu
 			return
 		}
 
-		products, err := repository.QueryGetProductsIOByBillID(ctx, db, &id)
+		products, err := repository.QueryGetProductsIOByBillID(ctx, db, id)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			w.Write([]byte(err.Error()))

@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"fmt"
 	"strconv"
 
 	"split-bill-backend/internal/entity"
@@ -60,7 +61,7 @@ func QueryCreateNewProduct(ctx context.Context, db *pgxpool.Pool, productIO *ent
 	return tx.Commit(ctx)
 }
 
-func QueryGetProductsIOByBillID(ctx context.Context, db *pgxpool.Pool, billID *string) (*entity.ProductsIO, error) {
+func QueryGetProductsIOByBillID(ctx context.Context, db *pgxpool.Pool, billID string) (*entity.ProductsIO, error) {
 	rows, err := db.Query(ctx,
 		`SELECT 
             p.id as product_id, 
@@ -84,7 +85,7 @@ func QueryGetProductsIOByBillID(ctx context.Context, db *pgxpool.Pool, billID *s
 	defer rows.Close()
 
 	var productsIO entity.ProductsIO
-	billIDUint, _ := strconv.ParseUint(*billID, 10, 32)
+	billIDUint, _ := strconv.ParseUint(billID, 10, 32)
 	productsIO.BillID = uint(billIDUint)
 
 	productsMap := make(map[uint]*entity.Product)
@@ -112,7 +113,6 @@ func QueryGetProductsIOByBillID(ctx context.Context, db *pgxpool.Pool, billID *s
 			return nil, err
 		}
 
-		// Добавляем продукт если его еще нет в мапе
 		if _, exists := productsMap[productID]; !exists {
 			productsMap[productID] = &entity.Product{
 				ID:      productID,
@@ -124,7 +124,6 @@ func QueryGetProductsIOByBillID(ctx context.Context, db *pgxpool.Pool, billID *s
 			}
 		}
 
-		// Добавляем person если он есть
 		if personID != nil && personName != nil {
 			person := entity.Persons{
 				ID:   *personID,
@@ -142,12 +141,12 @@ func QueryGetProductsIOByBillID(ctx context.Context, db *pgxpool.Pool, billID *s
 	return &productsIO, nil
 }
 
-func QueryGetProductsByBillID(ctx context.Context, db *pgxpool.Pool, billID *string) ([]entity.Product, error) {
+func QueryGetProductsByBillID(ctx context.Context, db *pgxpool.Pool, billID *uint) ([]entity.Product, error) {
 	rows, err := db.Query(ctx,
 		`SELECT p.id, p.name, p.price, p.count, p.payer_id
-		FROM products p
-		INNER JOIN bill_products bp ON p.id = bp.product_id
-		WHERE bp.bill_id = $1`,
+        FROM products p
+        INNER JOIN bill_products bp ON p.id = bp.product_id
+        WHERE bp.bill_id = $1`,
 		billID,
 	)
 	if err != nil {
@@ -167,7 +166,18 @@ func QueryGetProductsByBillID(ctx context.Context, db *pgxpool.Pool, billID *str
 		); err != nil {
 			return nil, err
 		}
+
+		persons, err := QueryGetPersonsForProduct(ctx, db, product.ID)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get persons for product %d: %w", product.ID, err)
+		}
+		product.Persons = persons
+
 		products = append(products, product)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
 	}
 
 	return products, nil

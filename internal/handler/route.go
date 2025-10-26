@@ -34,3 +34,8 @@ var (
 	PostNewProduct = fmt.Sprintf("POST %s/products", apiV1)
 	DeleteProduct  = fmt.Sprintf("DELETE %s/products", apiV1)
 )
+
+// Calculation
+var (
+	CalculateDebts = fmt.Sprintf("GET %s/calculation/debts", apiV1)
+)

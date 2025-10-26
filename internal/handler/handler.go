@@ -31,5 +31,8 @@ func Setup(cfg *config.Config, ctx context.Context) http.Handler {
 	mux.HandleFunc(GetAllProducts, controllers.GetAllProductsHandler(ctx, db))
 	mux.HandleFunc(PostNewProduct, controllers.AddNewProductHandler(ctx, db))
 	mux.HandleFunc(DeleteProduct, controllers.DeleteProductByID(ctx, db))
+
+	// Calculation
+	mux.HandleFunc(CalculateDebts, controllers.CalculateDebtsHandler(ctx, cfg.Client))
 	return mux
 }

@@ -24,7 +24,7 @@ func QueryGetUserByEmail(ctx context.Context, db *pgxpool.Pool, email *string) (
 	return &user, nil
 }
 
-func QueryGetUserByID(ctx context.Context, db *pgxpool.Pool, id *string) (*entity.Users, error) {
+func QueryGetUserByID(ctx context.Context, db *pgxpool.Pool, id *uint) (*entity.Users, error) {
 	var user entity.Users
 
 	err := db.QueryRow(ctx,

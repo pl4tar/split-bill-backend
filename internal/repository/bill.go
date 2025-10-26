@@ -8,22 +8,22 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-func QueryCreateNewBill(ctx context.Context, db *pgxpool.Pool, user *entity.Users, billName string) error {
+func QueryCreateNewBill(ctx context.Context, db *pgxpool.Pool, bill *entity.Bills) error {
 	_, err := db.Exec(ctx,
 		`INSERT INTO bills (title, created_by)
 		VALUES($1, $2)
-	`, billName, user.ID)
+	`, bill.Title, bill.CreatedUserID)
 
 	return err
 }
 
-func QueryGetBillsByUserID(ctx context.Context, db *pgxpool.Pool, user *entity.Users) ([]entity.Bills, error) {
+func QueryGetBillsByUserID(ctx context.Context, db *pgxpool.Pool, id *string) ([]entity.Bills, error) {
 	rows, err := db.Query(
 		ctx,
 		`SELECT id, title, created_by
         FROM bills
         WHERE created_by = $1`,
-		user.ID,
+		id,
 	)
 	if err != nil {
 		return nil, err
@@ -54,6 +54,34 @@ func QueryDeleteBillByID(ctx context.Context, db *pgxpool.Pool, bill_id uint) er
 	_, err := db.Exec(ctx,
 		`DELETE FROM bills WHERE id = $1`,
 		bill_id,
+	)
+
+	return err
+}
+
+func QueryGetBillByID(ctx context.Context, db *pgxpool.Pool, bill_id *uint) (*entity.Bills, error) {
+	var bill entity.Bills
+
+	err := db.QueryRow(ctx,
+		`SELECT title, created_by 
+		FROM bills 
+		WHERE id = $1`,
+		bill_id,
+	).Scan(
+		&bill.Title,
+		&bill.CreatedUserID,
+	)
+
+	return &bill, err
+}
+
+func QueryEditTitle(ctx context.Context, db *pgxpool.Pool, bill *entity.Bills) error {
+	_, err := db.Exec(ctx,
+		`UPDATE bills
+		SET title = $1
+		WHERE id = $2`,
+		bill.Title,
+		bill.ID,
 	)
 
 	return err

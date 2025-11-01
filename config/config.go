@@ -8,13 +8,6 @@ import (
 	"github.com/joho/godotenv"
 )
 
-// type HTTPServerConfig struct {
-// 	Address     string `yaml:"address"`
-// 	Port        string `yaml:"port"`
-// 	Timeout     string `yaml:"timeout" env-deafult:"4s"`
-// 	IdleTimeout string `yaml:"idle_timeout" env-deafult:"60s"`
-// }
-
 type Env struct {
 	DB_NAME     string `env:"DB_NAME"`
 	DB_USERNAME string `env:"DB_USERNAME"`

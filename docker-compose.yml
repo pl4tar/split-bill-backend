@@ -1,0 +1,47 @@
+# docker-compose.yml
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: split-bill-backend
+    ports:
+      - "4949:4949"
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=8967451230
+      - DB_NAME=splitbill
+      - IP_ADDRESS=0.0.0.0
+      - API_PORT=4949
+    depends_on:
+      - postgres
+    networks:
+      - split-bill-network
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:17-alpine
+    container_name: split-bill-postgres
+    environment:
+      - POSTGRES_DB=splitbill
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=8967451230
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./iternal/storage/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - split-bill-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+
+networks:
+  split-bill-network:
+    driver: bridge

@@ -40,7 +40,7 @@ func getEnv() *Env {
 	var cfg Env
 	err = env.Parse(&cfg)
 	if err != nil {
-		slog.Error("Failed to parse env: %v", err)
+		slog.Error("Failed to parse env: %v", slog.Any("error", err))
 		panic(err)
 	}
 

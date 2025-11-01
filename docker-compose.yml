@@ -8,7 +8,7 @@ services:
       dockerfile: Dockerfile
     container_name: split-bill-backend
     ports:
-      - "8080:8080"
+      - "4949:4949"
     environment:
       - DB_HOST=postgres
       - DB_PORT=5432
@@ -16,7 +16,7 @@ services:
       - DB_PASSWORD=8967451230
       - DB_NAME=splitbill
       - IP_ADDRESS=0.0.0.0
-      - API_PORT=8080
+      - API_PORT=4949
     depends_on:
       - postgres
     networks:
@@ -31,25 +31,10 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=8967451230
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
-    networks:
-      - split-bill-network
-    restart: unless-stopped
-
-  # Опционально: pgAdmin для управления БД
-  pgadmin:
-    image: dpage/pgadmin4
-    container_name: split-bill-pgadmin
-    environment:
-      - PGADMIN_DEFAULT_EMAIL=admin@admin.com
-      - PGADMIN_DEFAULT_PASSWORD=admin
-    ports:
-      - "5050:80"
-    depends_on:
-      - postgres
+      - ./iternal/storage/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - split-bill-network
     restart: unless-stopped

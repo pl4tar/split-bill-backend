@@ -20,14 +20,6 @@ func main() {
 	slog.Info("Starting app")
 	slog.Debug("Debud messages are enabled")
 
-	// router := chi.NewRouter()
-
-	// router.Use(middleware.RequestID)
-	// router.Use(middleware.Logger)
-	// router.Use(mwLog.New(log))
-	// router.Use(middleware.Recoverer)
-	// router.Use(middleware.URLFormat)
-
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer stop()
 	cfg.Client = storage.NewConnection(ctx, cfg)

@@ -4,14 +4,14 @@ import "fmt"
 
 var apiV1 = "/api/v1"
 
-//Users
+// Users
 var (
-	GetUserByEmail    = fmt.Sprintf("GET %s/user", apiV1)
-	PostNewUser       = fmt.Sprintf("POST %s/user", apiV1)
-	DeleteUserByEmail = fmt.Sprintf("DELETE %s/user", apiV1)
+	GetUserByEmail    = fmt.Sprintf("GET %s/users", apiV1)
+	PostNewUser       = fmt.Sprintf("POST %s/users", apiV1)
+	DeleteUserByEmail = fmt.Sprintf("DELETE %s/users", apiV1)
 )
 
-//Bills
+// Bills
 var (
 	GetAllBill      = fmt.Sprintf("GET %s/bills", apiV1)
 	GetBillById     = fmt.Sprintf("GET %s/bills/{id}", apiV1)
@@ -20,7 +20,7 @@ var (
 	UpdateBillTitle = fmt.Sprintf("PATCH %s/bills", apiV1)
 )
 
-//Persons
+// Persons
 var (
 	GetAllPersons    = fmt.Sprintf("GET %s/persons", apiV1)
 	PostNewPerson    = fmt.Sprintf("POST %s/persons", apiV1)

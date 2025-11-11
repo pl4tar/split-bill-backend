@@ -52,44 +52,6 @@ const docTemplate = `{
                     }
                 }
             },
-            "put": {
-                "description": "Обновляет данные счета",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "bills"
-                ],
-                "summary": "Редактирование счета",
-                "parameters": [
-                    {
-                        "description": "Обновленные данные счета",
-                        "name": "bill",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/entity.Bills"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Счет успешно обновлен",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "400": {
-                        "description": "Ошибка запроса",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            },
             "post": {
                 "description": "Создает новый счет для пользователя",
                 "consumes": [
@@ -154,6 +116,44 @@ const docTemplate = `{
                 "responses": {
                     "200": {
                         "description": "Счет успешно удален",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Ошибка запроса",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "description": "Обновляет данные счета",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "bills"
+                ],
+                "summary": "Редактирование счета",
+                "parameters": [
+                    {
+                        "description": "Обновленные данные счета",
+                        "name": "bill",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/entity.Bills"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Счет успешно обновлен",
                         "schema": {
                             "type": "string"
                         }
@@ -245,44 +245,6 @@ const docTemplate = `{
                     }
                 }
             },
-            "put": {
-                "description": "Обновляет данные участника",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "persons"
-                ],
-                "summary": "Редактирование участника",
-                "parameters": [
-                    {
-                        "description": "Обновленные данные участника",
-                        "name": "person",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/entity.Persons"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Участник успешно обновлен",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "400": {
-                        "description": "Ошибка запроса",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            },
             "post": {
                 "description": "Создает нового участника для счета",
                 "consumes": [
@@ -347,6 +309,44 @@ const docTemplate = `{
                 "responses": {
                     "200": {
                         "description": "Участник успешно удален",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Ошибка запроса",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "description": "Обновляет данные участника",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "persons"
+                ],
+                "summary": "Редактирование участника",
+                "parameters": [
+                    {
+                        "description": "Обновленные данные участника",
+                        "name": "person",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/entity.Persons"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Участник успешно обновлен",
                         "schema": {
                             "type": "string"
                         }
@@ -513,6 +513,9 @@ const docTemplate = `{
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "users"
+                ],
                 "summary": "Регистрация нового пользователя",
                 "parameters": [
                     {
@@ -553,6 +556,9 @@ const docTemplate = `{
                 ],
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "users"
                 ],
                 "summary": "Удаление пользователя по email",
                 "parameters": [

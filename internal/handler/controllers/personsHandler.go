@@ -163,7 +163,7 @@ func DeletePersonByID(ctx context.Context, db *pgxpool.Pool) http.HandlerFunc {
 // @Param person body entity.Persons true "Обновленные данные участника"
 // @Success 200 {string} string "Участник успешно обновлен"
 // @Failure 400 {string} string "Ошибка запроса"
-// @Router /persons [put]
+// @Router /persons [patch]
 func EditPersonHandler(ctx context.Context, db *pgxpool.Pool) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Header.Get("Content-Type") != "application/json" {

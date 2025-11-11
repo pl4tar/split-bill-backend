@@ -165,7 +165,7 @@ func DeleteBillByID(ctx context.Context, db *pgxpool.Pool) http.HandlerFunc {
 // @Param bill body entity.Bills true "Обновленные данные счета"
 // @Success 200 {string} string "Счет успешно обновлен"
 // @Failure 400 {string} string "Ошибка запроса"
-// @Router /bills [put]
+// @Router /bills [patch]
 func EditBill(ctx context.Context, db *pgxpool.Pool) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Header.Get("Content-Type") != "application/json" {

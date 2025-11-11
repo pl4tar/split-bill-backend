@@ -56,6 +56,7 @@ func GetUserByEmail(ctx context.Context, db *pgxpool.Pool) http.HandlerFunc {
 // AddNewUser
 // @Summary Регистрация нового пользователя
 // @Description Создаёт нового пользователя и отправляет ссылку для подтверждения email
+// @Tags users
 // @Accept json
 // @Produce json
 // @Param user body entity.UserRegister true "Данные пользователя"
@@ -115,6 +116,7 @@ func AddNewUser(ctx context.Context, cfg *config.Config) http.HandlerFunc {
 // DeleteUserEmail
 // @Summary Удаление пользователя по email
 // @Description Удаляет пользователя по указанному email
+// @Tags users
 // @Accept json
 // @Produce json
 // @Param request body entity.UserDel true "Email пользователя для удаления"

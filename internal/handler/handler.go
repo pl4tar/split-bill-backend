@@ -2,10 +2,13 @@ package handler
 
 import (
 	"context"
+	"fmt"
 	"log/slog"
 	"net/http"
 	"split-bill-backend/config"
 	"split-bill-backend/internal/handler/controllers"
+
+	httpSwagger "github.com/swaggo/http-swagger"
 )
 
 func Setup(cfg *config.Config, ctx context.Context) http.Handler {
@@ -35,6 +38,9 @@ func Setup(cfg *config.Config, ctx context.Context) http.Handler {
 
 	// Calculation
 	mux.HandleFunc(CalculateDebts, loggingMiddleware(corsMiddleware(controllers.CalculateDebtsHandler(ctx, cfg.Client))))
+
+	// swag
+	mux.Handle("/swagger/", httpSwagger.WrapHandler)
 	return mux
 }
 
@@ -51,8 +57,8 @@ func loggingMiddleware(next http.HandlerFunc) http.HandlerFunc {
 		ip := r.Header.Get("X-Forwarded-For")
 
 		userAgent := r.Header.Get("User-Agent")
-		slog.Info("IP: %s, Method: %s, Route: %s, Query: %s, UserAgent: %s, AuthHeader: %s",
-			ip, r.Method, r.URL.Path, r.URL.Query(), userAgent, r.Header.Get("Authorization"))
+		slog.Info(fmt.Sprintf("IP: %s, Method: %s, Route: %s, Query: %s, UserAgent: %s, AuthHeader: %s",
+			ip, r.Method, r.URL.Path, r.URL.Query(), userAgent, r.Header.Get("Authorization")))
 
 		next(w, r)
 	}
@@ -61,7 +67,8 @@ func loggingMiddleware(next http.HandlerFunc) http.HandlerFunc {
 func corsMiddleware(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		allowedOrigins := map[string]bool{
-			"http://localhost:5173": true,
+			"http://localhost:5173":  true,
+			"http://localhost:63342": true,
 		}
 		origin := r.Header.Get("Origin")
 		if allowedOrigins[origin] {

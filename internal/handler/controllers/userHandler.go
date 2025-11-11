@@ -12,6 +12,15 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
+// GetUserByEmail
+// @Summary Получение пользователя по email
+// @Description Возвращает json пользователя
+// @Tags users
+// @Produce json
+// @Param email query string true "Email пользователя"
+// @Success 200 {object} entity.Users "Пользователь"
+// @Failure 400 {string} string "Ошибка запроса"
+// @Router /users [get]
 func GetUserByEmail(ctx context.Context, db *pgxpool.Pool) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		email := r.URL.Query().Get("email")
@@ -44,6 +53,16 @@ func GetUserByEmail(ctx context.Context, db *pgxpool.Pool) http.HandlerFunc {
 	}
 }
 
+// AddNewUser
+// @Summary Регистрация нового пользователя
+// @Description Создаёт нового пользователя и отправляет ссылку для подтверждения email
+// @Accept json
+// @Produce json
+// @Param user body entity.UserRegister true "Данные пользователя"
+// @Success 200 {string} string "ok"
+// @Failure 400 {string} string "error"
+// @Failure 409 {string} string "email already exists"
+// @Router /users [post]
 func AddNewUser(ctx context.Context, cfg *config.Config) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Header.Get("Content-Type") != "application/json" {
@@ -93,6 +112,16 @@ func AddNewUser(ctx context.Context, cfg *config.Config) http.HandlerFunc {
 	}
 }
 
+// DeleteUserEmail
+// @Summary Удаление пользователя по email
+// @Description Удаляет пользователя по указанному email
+// @Accept json
+// @Produce json
+// @Param request body entity.UserDel true "Email пользователя для удаления"
+// @Success 200 {string} string "Пользователь удален"
+// @Failure 400 {string} string "Ошибка запроса"
+// @Failure 204 {string} string "No Content"
+// @Router /users [delete]
 func DeleteUserEmail(ctx context.Context, db *pgxpool.Pool) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Header.Get("Content-Type") != "application/json" {

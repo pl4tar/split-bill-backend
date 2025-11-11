@@ -10,6 +10,16 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
+// CalculateDebtsHandler
+// @Summary Расчет долгов по счету
+// @Description Выполняет расчет долгов между участниками для указанного счета
+// @Tags debts
+// @Produce json
+// @Param bill_id query string true "ID счета"
+// @Success 200 {object} entity.DebtCalculation "Результат расчета долгов"
+// @Failure 400 {string} string "Ошибка запроса"
+// @Failure 500 {string} string "Внутренняя ошибка сервера"
+// @Router /debts [get]
 func CalculateDebtsHandler(ctx context.Context, db *pgxpool.Pool) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		billIDStr := r.URL.Query().Get("bill_id")

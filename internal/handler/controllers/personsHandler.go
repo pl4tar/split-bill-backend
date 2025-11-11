@@ -11,6 +11,15 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
+// GetAllPersonsHandler
+// @Summary Получение всех участников по ID пользователя
+// @Description Возвращает список участников для указанного пользователя
+// @Tags persons
+// @Produce json
+// @Param user_id query string true "ID пользователя"
+// @Success 200 {array} entity.Persons "Список участников"
+// @Failure 400 {string} string "Ошибка запроса"
+// @Router /persons [get]
 func GetAllPersonsHandler(ctx context.Context, db *pgxpool.Pool) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := r.URL.Query().Get("user_id")
@@ -43,6 +52,16 @@ func GetAllPersonsHandler(ctx context.Context, db *pgxpool.Pool) http.HandlerFun
 	}
 }
 
+// AddNewPersonHandler
+// @Summary Добавление нового участника
+// @Description Создает нового участника для счета
+// @Tags persons
+// @Accept json
+// @Produce json
+// @Param person body entity.Persons true "Данные участника"
+// @Success 200 {string} string "Участник успешно создан"
+// @Failure 400 {string} string "Ошибка запроса"
+// @Router /persons [post]
 func AddNewPersonHandler(ctx context.Context, cfg *config.Config) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Header.Get("Content-Type") != "application/json" {
@@ -85,6 +104,16 @@ func AddNewPersonHandler(ctx context.Context, cfg *config.Config) http.HandlerFu
 	}
 }
 
+// DeletePersonByID
+// @Summary Удаление участника по ID
+// @Description Удаляет участника по указанному идентификатору
+// @Tags persons
+// @Accept json
+// @Produce json
+// @Param request body entity.PersonDel true "ID участника для удаления"
+// @Success 200 {string} string "Участник успешно удален"
+// @Failure 400 {string} string "Ошибка запроса"
+// @Router /persons [delete]
 func DeletePersonByID(ctx context.Context, db *pgxpool.Pool) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Header.Get("Content-Type") != "application/json" {
@@ -125,6 +154,16 @@ func DeletePersonByID(ctx context.Context, db *pgxpool.Pool) http.HandlerFunc {
 	}
 }
 
+// EditPersonHandler
+// @Summary Редактирование участника
+// @Description Обновляет данные участника
+// @Tags persons
+// @Accept json
+// @Produce json
+// @Param person body entity.Persons true "Обновленные данные участника"
+// @Success 200 {string} string "Участник успешно обновлен"
+// @Failure 400 {string} string "Ошибка запроса"
+// @Router /persons [put]
 func EditPersonHandler(ctx context.Context, db *pgxpool.Pool) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Header.Get("Content-Type") != "application/json" {

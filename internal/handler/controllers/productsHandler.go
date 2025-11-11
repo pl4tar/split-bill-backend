@@ -10,6 +10,15 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
+// GetAllProductsHandler
+// @Summary Получение всех продуктов по ID счета
+// @Description Возвращает список продуктов для указанного счета
+// @Tags products
+// @Produce json
+// @Param bill_id query string true "ID счета"
+// @Success 200 {object} entity.Product "Список продуктов"
+// @Failure 400 {string} string "Ошибка запроса"
+// @Router /products [get]
 func GetAllProductsHandler(ctx context.Context, db *pgxpool.Pool) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := r.URL.Query().Get("bill_id")
@@ -42,6 +51,16 @@ func GetAllProductsHandler(ctx context.Context, db *pgxpool.Pool) http.HandlerFu
 	}
 }
 
+// AddNewProductHandler
+// @Summary Добавление нового продукта
+// @Description Создает новый продукт для счета
+// @Tags products
+// @Accept json
+// @Produce json
+// @Param product body entity.Product true "Данные продукта"
+// @Success 200 {string} string "Product added successfully"
+// @Failure 400 {string} string "Ошибка запроса"
+// @Router /products [post]
 func AddNewProductHandler(ctx context.Context, db *pgxpool.Pool) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Header.Get("Content-Type") != "application/json" {
@@ -81,6 +100,16 @@ func AddNewProductHandler(ctx context.Context, db *pgxpool.Pool) http.HandlerFun
 	}
 }
 
+// DeleteProductByID
+// @Summary Удаление продукта по ID
+// @Description Удаляет продукт по указанному идентификатору
+// @Tags products
+// @Accept json
+// @Produce json
+// @Param request body entity.ProductsDel true "ID продукта для удаления"
+// @Success 200 {string} string "Product deleted successfully"
+// @Failure 400 {string} string "Ошибка запроса"
+// @Router /products [delete]
 func DeleteProductByID(ctx context.Context, db *pgxpool.Pool) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Header.Get("Content-Type") != "application/json" {

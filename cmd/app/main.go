@@ -8,11 +8,21 @@ import (
 	"net/http"
 	"os/signal"
 	"split-bill-backend/config"
+	_ "split-bill-backend/docs"
 	"split-bill-backend/internal/handler"
 	"split-bill-backend/internal/storage"
 	"syscall"
 	"time"
 )
+
+// @title           Split bill backend
+// @version         0.0.1
+// @description     Simply backend app
+
+// @host      localhost:4949
+// @BasePath  /api/v1
+
+// @securityDefinitions.basic  BasicAuth
 
 func main() {
 	cfg := config.GetConfig()

@@ -11,6 +11,15 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
+// GetAllBillsHandler
+// @Summary Получение всех счетов по ID пользователя
+// @Description Возвращает список счетов для указанного пользователя
+// @Tags bills
+// @Produce json
+// @Param user_id query string true "ID пользователя"
+// @Success 200 {array} entity.Bills "Список счетов"
+// @Failure 400 {string} string "Ошибка запроса"
+// @Router /bills [get]
 func GetAllBillsHandler(ctx context.Context, db *pgxpool.Pool) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := r.URL.Query().Get("user_id")
@@ -43,6 +52,16 @@ func GetAllBillsHandler(ctx context.Context, db *pgxpool.Pool) http.HandlerFunc 
 	}
 }
 
+// AddNewBill
+// @Summary Создание нового счета
+// @Description Создает новый счет для пользователя
+// @Tags bills
+// @Accept json
+// @Produce json
+// @Param bill body entity.Bills true "Данные счета"
+// @Success 200 {string} string "Счет успешно создан"
+// @Failure 400 {string} string "Ошибка запроса"
+// @Router /bills [post]
 func AddNewBill(ctx context.Context, cfg *config.Config) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Header.Get("Content-Type") != "application/json" {
@@ -86,6 +105,16 @@ func AddNewBill(ctx context.Context, cfg *config.Config) http.HandlerFunc {
 	}
 }
 
+// DeleteBillByID
+// @Summary Удаление счета по ID
+// @Description Удаляет счет по указанному идентификатору
+// @Tags bills
+// @Accept json
+// @Produce json
+// @Param request body entity.BillDel true "ID счета для удаления"
+// @Success 200 {string} string "Счет успешно удален"
+// @Failure 400 {string} string "Ошибка запроса"
+// @Router /bills [delete]
 func DeleteBillByID(ctx context.Context, db *pgxpool.Pool) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Header.Get("Content-Type") != "application/json" {
@@ -122,10 +151,21 @@ func DeleteBillByID(ctx context.Context, db *pgxpool.Pool) http.HandlerFunc {
 
 			return
 		}
-
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("Bill deleted successfully"))
 	}
 }
 
+// EditBill
+// @Summary Редактирование счета
+// @Description Обновляет данные счета
+// @Tags bills
+// @Accept json
+// @Produce json
+// @Param bill body entity.Bills true "Обновленные данные счета"
+// @Success 200 {string} string "Счет успешно обновлен"
+// @Failure 400 {string} string "Ошибка запроса"
+// @Router /bills [put]
 func EditBill(ctx context.Context, db *pgxpool.Pool) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Header.Get("Content-Type") != "application/json" {

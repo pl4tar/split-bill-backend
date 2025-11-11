@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"split-bill-backend/config"
 	"split-bill-backend/internal/handler/controllers"
+
+	httpSwagger "github.com/swaggo/http-swagger"
 )
 
 func Setup(cfg *config.Config, ctx context.Context) http.Handler {
@@ -36,6 +38,9 @@ func Setup(cfg *config.Config, ctx context.Context) http.Handler {
 
 	// Calculation
 	mux.HandleFunc(CalculateDebts, loggingMiddleware(corsMiddleware(controllers.CalculateDebtsHandler(ctx, cfg.Client))))
+
+	// swag
+	mux.Handle("/swagger/", httpSwagger.WrapHandler)
 	return mux
 }
 

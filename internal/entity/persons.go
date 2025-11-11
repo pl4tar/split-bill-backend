@@ -9,3 +9,7 @@ type PersonsOutput struct {
 	ID   uint   `json:"id,string" example:"1"`
 	Name string `json:"name" example:"Danil"`
 }
+
+type PersonDel struct {
+	ID uint `json:"id,string" example:"1"`
+}

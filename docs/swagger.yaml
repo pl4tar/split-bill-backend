@@ -1,4 +1,512 @@
+basePath: /api/v1
+definitions:
+  entity.BillDel:
+    properties:
+      bill_id:
+        example: "1"
+        type: string
+    type: object
+  entity.Bills:
+    properties:
+      bill_id:
+        example: "1"
+        type: string
+      bill_title:
+        example: Weekend with friends
+        type: string
+      user_id:
+        example: "1"
+        type: string
+    type: object
+  entity.Debt:
+    properties:
+      amount:
+        type: number
+      description:
+        type: string
+      from_person_id:
+        type: integer
+      from_person_name:
+        type: string
+      to_person_id:
+        type: integer
+      to_person_name:
+        type: string
+    type: object
+  entity.DebtCalculation:
+    properties:
+      bill_id:
+        type: integer
+      debts:
+        items:
+          $ref: '#/definitions/entity.Debt'
+        type: array
+    type: object
+  entity.PersonDel:
+    properties:
+      id:
+        example: "1"
+        type: string
+    type: object
+  entity.Persons:
+    properties:
+      bill_id:
+        example: "1"
+        type: string
+      id:
+        example: "1"
+        type: string
+      name:
+        example: Danil
+        type: string
+    type: object
+  entity.Product:
+    properties:
+      payer_id:
+        example: "1"
+        type: string
+      persons:
+        items:
+          $ref: '#/definitions/entity.Persons'
+        type: array
+      product_count:
+        example: 2
+        type: integer
+      product_id:
+        example: "1"
+        type: string
+      product_name:
+        example: beer
+        type: string
+      product_price:
+        example: 12.99
+        type: number
+    type: object
+  entity.ProductsDel:
+    properties:
+      product_id:
+        example: "1"
+        type: string
+    type: object
+  entity.UserDel:
+    properties:
+      id:
+        example: 1
+        type: integer
+    type: object
+  entity.UserRegister:
+    properties:
+      email:
+        example: user@exmple.com
+        type: string
+      name:
+        example: Dima
+        type: string
+      password:
+        example: password
+        type: string
+    type: object
+  entity.Users:
+    properties:
+      email:
+        example: user@exmple.com
+        type: string
+      id:
+        example: 1
+        type: integer
+      name:
+        example: Dima
+        type: string
+      password:
+        example: password
+        type: string
+    type: object
+host: localhost:4949
 info:
   contact: {}
-paths: {}
+  description: Simply backend app
+  title: Split bill backend
+  version: 0.0.1
+paths:
+  /bills:
+    delete:
+      consumes:
+      - application/json
+      description: Удаляет счет по указанному идентификатору
+      parameters:
+      - description: ID счета для удаления
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/entity.BillDel'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Счет успешно удален
+          schema:
+            type: string
+        "400":
+          description: Ошибка запроса
+          schema:
+            type: string
+      summary: Удаление счета по ID
+      tags:
+      - bills
+    get:
+      description: Возвращает список счетов для указанного пользователя
+      parameters:
+      - description: ID пользователя
+        in: query
+        name: user_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Список счетов
+          schema:
+            items:
+              $ref: '#/definitions/entity.Bills'
+            type: array
+        "400":
+          description: Ошибка запроса
+          schema:
+            type: string
+      summary: Получение всех счетов по ID пользователя
+      tags:
+      - bills
+    post:
+      consumes:
+      - application/json
+      description: Создает новый счет для пользователя
+      parameters:
+      - description: Данные счета
+        in: body
+        name: bill
+        required: true
+        schema:
+          $ref: '#/definitions/entity.Bills'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Счет успешно создан
+          schema:
+            type: string
+        "400":
+          description: Ошибка запроса
+          schema:
+            type: string
+      summary: Создание нового счета
+      tags:
+      - bills
+    put:
+      consumes:
+      - application/json
+      description: Обновляет данные счета
+      parameters:
+      - description: Обновленные данные счета
+        in: body
+        name: bill
+        required: true
+        schema:
+          $ref: '#/definitions/entity.Bills'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Счет успешно обновлен
+          schema:
+            type: string
+        "400":
+          description: Ошибка запроса
+          schema:
+            type: string
+      summary: Редактирование счета
+      tags:
+      - bills
+  /debts:
+    get:
+      description: Выполняет расчет долгов между участниками для указанного счета
+      parameters:
+      - description: ID счета
+        in: query
+        name: bill_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Результат расчета долгов
+          schema:
+            $ref: '#/definitions/entity.DebtCalculation'
+        "400":
+          description: Ошибка запроса
+          schema:
+            type: string
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            type: string
+      summary: Расчет долгов по счету
+      tags:
+      - debts
+  /persons:
+    delete:
+      consumes:
+      - application/json
+      description: Удаляет участника по указанному идентификатору
+      parameters:
+      - description: ID участника для удаления
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/entity.PersonDel'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Участник успешно удален
+          schema:
+            type: string
+        "400":
+          description: Ошибка запроса
+          schema:
+            type: string
+      summary: Удаление участника по ID
+      tags:
+      - persons
+    get:
+      description: Возвращает список участников для указанного пользователя
+      parameters:
+      - description: ID пользователя
+        in: query
+        name: user_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Список участников
+          schema:
+            items:
+              $ref: '#/definitions/entity.Persons'
+            type: array
+        "400":
+          description: Ошибка запроса
+          schema:
+            type: string
+      summary: Получение всех участников по ID пользователя
+      tags:
+      - persons
+    post:
+      consumes:
+      - application/json
+      description: Создает нового участника для счета
+      parameters:
+      - description: Данные участника
+        in: body
+        name: person
+        required: true
+        schema:
+          $ref: '#/definitions/entity.Persons'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Участник успешно создан
+          schema:
+            type: string
+        "400":
+          description: Ошибка запроса
+          schema:
+            type: string
+      summary: Добавление нового участника
+      tags:
+      - persons
+    put:
+      consumes:
+      - application/json
+      description: Обновляет данные участника
+      parameters:
+      - description: Обновленные данные участника
+        in: body
+        name: person
+        required: true
+        schema:
+          $ref: '#/definitions/entity.Persons'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Участник успешно обновлен
+          schema:
+            type: string
+        "400":
+          description: Ошибка запроса
+          schema:
+            type: string
+      summary: Редактирование участника
+      tags:
+      - persons
+  /products:
+    delete:
+      consumes:
+      - application/json
+      description: Удаляет продукт по указанному идентификатору
+      parameters:
+      - description: ID продукта для удаления
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/entity.ProductsDel'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Product deleted successfully
+          schema:
+            type: string
+        "400":
+          description: Ошибка запроса
+          schema:
+            type: string
+      summary: Удаление продукта по ID
+      tags:
+      - products
+    get:
+      description: Возвращает список продуктов для указанного счета
+      parameters:
+      - description: ID счета
+        in: query
+        name: bill_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Список продуктов
+          schema:
+            $ref: '#/definitions/entity.Product'
+        "400":
+          description: Ошибка запроса
+          schema:
+            type: string
+      summary: Получение всех продуктов по ID счета
+      tags:
+      - products
+    post:
+      consumes:
+      - application/json
+      description: Создает новый продукт для счета
+      parameters:
+      - description: Данные продукта
+        in: body
+        name: product
+        required: true
+        schema:
+          $ref: '#/definitions/entity.Product'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Product added successfully
+          schema:
+            type: string
+        "400":
+          description: Ошибка запроса
+          schema:
+            type: string
+      summary: Добавление нового продукта
+      tags:
+      - products
+  /users:
+    delete:
+      consumes:
+      - application/json
+      description: Удаляет пользователя по указанному email
+      parameters:
+      - description: Email пользователя для удаления
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/entity.UserDel'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Пользователь удален
+          schema:
+            type: string
+        "204":
+          description: No Content
+          schema:
+            type: string
+        "400":
+          description: Ошибка запроса
+          schema:
+            type: string
+      summary: Удаление пользователя по email
+    get:
+      description: Возвращает json пользователя
+      parameters:
+      - description: Email пользователя
+        in: query
+        name: email
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Пользователь
+          schema:
+            $ref: '#/definitions/entity.Users'
+        "400":
+          description: Ошибка запроса
+          schema:
+            type: string
+      summary: Получение пользователя по email
+      tags:
+      - users
+    post:
+      consumes:
+      - application/json
+      description: Создаёт нового пользователя и отправляет ссылку для подтверждения
+        email
+      parameters:
+      - description: Данные пользователя
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/entity.UserRegister'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: error
+          schema:
+            type: string
+        "409":
+          description: email already exists
+          schema:
+            type: string
+      summary: Регистрация нового пользователя
+securityDefinitions:
+  BasicAuth:
+    type: basic
 swagger: "2.0"
